@@ -30,7 +30,10 @@ print(sess.run(out))
 # Hint: Look up tf.case().
 ###############################################################################
 
-# YOUR CODE
+x = tf.random_uniform(shape=[], minval=-1, maxval=1, dtype=tf.float32)
+y = tf.random_uniform(shape=[], minval=-1, maxval=1, dtype=tf.float32)
+out = tf.case({tf.less(x,y): lambda: x + y, tf.greater(x,y): lambda: x - y}, default= lambda: tf.constant(0.0), exclusive=True)
+print(sess.run(out))
 
 ###############################################################################
 # 1c: Create the tensor x of the value [[0, -2, -1], [0, 1, 2]] 
@@ -39,7 +42,9 @@ print(sess.run(out))
 # Hint: Look up tf.equal().
 ###############################################################################
 
-# YOUR CODE
+x = tf.constant([[0, -2, -1], [0, 1, 2]])
+y = tf.zeros_like(x)
+print(sess.run(tf.equal(x, y)))
 
 ###############################################################################
 # 1d: Create the tensor x of value 
@@ -54,7 +59,14 @@ print(sess.run(out))
 # Hint: Use tf.gather().
 ###############################################################################
 
-# YOUR CODE
+x = tf.constant([29.05088806,  27.61298943,  31.19073486,  29.35532951,
+                 30.97266006,  26.67541885,  38.08450317,  20.74983215,
+                 34.94445419,  34.45999146,  29.06485367,  36.01657104,
+                 27.88236427,  20.56035233,  30.20379066,  29.51215172,
+                 33.71149445,  28.59134293,  36.05556488,  28.66994858])
+indices = tf.where(x > 30)
+out = tf.gather(x, indices)
+print(sess.run(out))
 
 ###############################################################################
 # 1e: Create a diagnoal 2-d tensor of size 6 x 6 with the diagonal values of 1,
@@ -62,7 +74,8 @@ print(sess.run(out))
 # Hint: Use tf.range() and tf.diag().
 ###############################################################################
 
-# YOUR CODE
+x = tf.diag(tf.range(1,7))
+print(sess.run(x))
 
 ###############################################################################
 # 1f: Create a random 2-d tensor of size 10 x 10 from any distribution.
@@ -70,15 +83,18 @@ print(sess.run(out))
 # Hint: Look at tf.matrix_determinant().
 ###############################################################################
 
-# YOUR CODE
+x = tf.random_normal([10,10], mean=15, stddev=2)
+det = tf.matrix_determinant(x)
+print(sess.run(det))
 
 ###############################################################################
 # 1g: Create tensor x with value [5, 2, 3, 5, 10, 6, 2, 3, 4, 2, 1, 1, 0, 9].
 # Return the unique elements in x
 # Hint: use tf.unique(). Keep in mind that tf.unique() returns a tuple.
 ###############################################################################
-
-# YOUR CODE
+value = tf.constant([5, 2, 3, 5, 10, 6, 2, 3, 4, 2, 1, 1, 0, 9])
+x, _ = tf.unique(value)
+print(sess.run(x))
 
 ###############################################################################
 # 1h: Create two tensors x and y of shape 300 from any normal distribution,
@@ -90,4 +106,15 @@ print(sess.run(out))
 # Hint: see the Huber loss function in the lecture slides 3.
 ###############################################################################
 
-# YOUR CODE
+x = tf.random_normal(shape=[300], mean=15, stddev=2)
+y = tf.random_normal(shape=[300], mean=15, stddev=2)
+average = tf.reduce_mean(x - y)
+
+def reduce_mean_square():
+    return tf.reduce_mean(tf.square(x - y))
+
+def reduce_mean_abs():
+    return tf.reduce_mean(tf.abs(x - y))
+
+out = tf.cond(average < 0, reduce_mean_square, reduce_mean_abs)
+print(sess.run(out))
